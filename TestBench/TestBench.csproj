@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="xy.Db.PostgreSQL" Version="1.0.3" />
-    <PackageReference Include="xy.Db.SQLite64" Version="1.0.3" />
-    <PackageReference Include="xy.Db.SQLServer" Version="1.0.3" />
+    <PackageReference Include="xy.Db.PostgreSQL" Version="1.0.4" />
+    <PackageReference Include="xy.Db.SQLite64" Version="1.0.4" />
+    <PackageReference Include="xy.Db.SQLServer" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,6 +20,7 @@ namespace TestBench
             //add all models to model list
             //Company c = Company.i; //
             BaseModel.addToModelList(typeof(Company));
+            BaseModel.addToModelList(typeof(Employee));
 
             //create database
             Dictionary<string, string> dbCreatePars = new Dictionary<string, string>();
@@ -47,7 +48,7 @@ namespace TestBench
                 dbCreatePars,
                 adminPars
                 );
-
+            
             //use model instance
             Company.i.update();
         }

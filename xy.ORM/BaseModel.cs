@@ -35,7 +35,6 @@ namespace xy.ORM
             else
             {
                 T instance = new T();
-                //instance.InitFieldList();
                 _instanceDic.Add(typeof(T), instance);
                 return instance;
             }
@@ -57,6 +56,7 @@ namespace xy.ORM
 
         protected string _bmName; // table show name
         protected string _bmCode; // table name
+        public string BmCode { get => _bmCode; }
 
         #region fields
 
@@ -91,6 +91,7 @@ namespace xy.ORM
         {
             string dbScript = "";
 
+            //table script
             foreach(Type type in modelList)
             {
                 BaseModel model;
@@ -101,20 +102,33 @@ namespace xy.ORM
                 else
                 {
                     model = (BaseModel)Activator.CreateInstance(type);
+                    _instanceDic[type] = model;
                 }
                 dbScript += model.createTableDbScript();
+            }
+
+            //foreign Key script
+            if (DefaultDbService.createForeignKeyAfterCreateTable())
+            {
+                foreach (Type type in modelList)
+                {
+                    dbScript += _instanceDic[type]
+                        .createForeignKeyDbScript();
+                }
             }
 
             return dbScript;
         }
         private string createTableDbScript()
         {
-            string tabledbScript = "CREATE TABLE " + _bmCode + "(" +
-                createFieldDbScript() + ");";
+            string tabledbScript = "CREATE TABLE " + BmCode + "(" +
+                createFieldDbScript(
+                    DefaultDbService.createForeignKeyWhenCreateTable()
+                    ) + ");";
 
             return tabledbScript;
         }
-        private string createFieldDbScript()
+        private string createFieldDbScript(bool createForeignKey)
         {
             string fieldDbScript = "";
             foreach (FieldDef field in fieldList)
@@ -125,8 +139,43 @@ namespace xy.ORM
                 }
                 fieldDbScript += field.createDbScript();
             }
+            if(createForeignKey) {
+                foreach (FieldDef field in fieldList)
+                {
+                    //??
+                }
+            }
             return fieldDbScript;
         }
+        private string createForeignKeyDbScript()
+        {
+            string constraints  = "";
+            foreach (FieldDef field in fieldList)
+            {
+                if (field.IsForeignKey)
+                {
+                    if (constraints != "")
+                    {
+                        constraints += ",";
+                    }
+                    constraints += "ADD CONSTRAINT ";
+                    constraints += _bmCode 
+                        + field.FieldCode + field.RefModel.BmCode + " ";
+                    constraints += "FOREIGN KEY (" + field.FieldCode + ") ";
+                    constraints += "REFERENCES " + field.RefModel.BmCode + "(";
+                    constraints += KModel.fID + ")";
+                }
+            }
+            string foreignKeyDbScript = "";
+            if(constraints != "")
+            {
+                foreignKeyDbScript += "ALTER TABLE ";
+                foreignKeyDbScript += _bmCode + " ";
+                foreignKeyDbScript += constraints + ";";
+            }
+            return foreignKeyDbScript;
+        }
+
 
         #endregion
 

@@ -7,11 +7,12 @@ using xy.ORM;
 
 namespace TestBench
 {
-    public class Company: BaseModel
+    public class Company: KModel
     {
+        #region Constructor and helper peroperty
         public Company()
         {
-            _bmName = "公司";
+            _bmName = "Company";
             _bmCode = "Company";
             InitFieldList();
         }
@@ -20,6 +21,8 @@ namespace TestBench
         {
             get => BaseModel.i<Company>();
         }
+
+        #endregion
 
         static public string CompanyName = "CompanyName";
         static public string CompanyCode = "CompanyCode";
@@ -34,21 +37,21 @@ namespace TestBench
         {
             base.InitFieldList();
 
-            fieldList.Add(new FieldDef(CompanyName, "公司名称", 
+            fieldList.Add(new FieldDef(CompanyName, "CompanyName", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyCode, "公司代码", 
+            fieldList.Add(new FieldDef(CompanyCode, "CompanyCode", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyType, "公司类型", 
+            fieldList.Add(new FieldDef(CompanyType, "CompanyType", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyAddress, "公司地址", 
+            fieldList.Add(new FieldDef(CompanyAddress, "CompanyAddress", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyPhone, "公司电话", 
+            fieldList.Add(new FieldDef(CompanyPhone, "CompanyPhone", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyEmail, "公司邮箱", 
+            fieldList.Add(new FieldDef(CompanyEmail, "CompanyEmail", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyWebsite, "公司网站", 
+            fieldList.Add(new FieldDef(CompanyWebsite, "CompanyWebsite", 
                 typeof(string)));
-            fieldList.Add(new FieldDef(CompanyFax, "公司传真", 
+            fieldList.Add(new FieldDef(CompanyFax, "CompanyFax", 
                 typeof(string)));
         }
     }
