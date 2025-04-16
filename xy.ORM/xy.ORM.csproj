@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="xy.Db" Version="1.0.3" />
-    <PackageReference Include="xy.Db.PostgreSQL" Version="1.0.3" />
   </ItemGroup>
 
 </Project>
