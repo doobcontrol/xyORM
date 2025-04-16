@@ -142,7 +142,17 @@ namespace xy.ORM
             if(createForeignKey) {
                 foreach (FieldDef field in fieldList)
                 {
-                    //??
+                    if (field.IsForeignKey)
+                    {
+                        fieldDbScript += ",CONSTRAINT ";
+                        fieldDbScript += _bmCode
+                            + field.FieldCode + field.RefModel.BmCode + " ";
+                        fieldDbScript += "FOREIGN KEY (" 
+                            + field.FieldCode + ") ";
+                        fieldDbScript += "REFERENCES " 
+                            + field.RefModel.BmCode + "(";
+                        fieldDbScript += KModel.fID + ") ";
+                    }
                 }
             }
             return fieldDbScript;

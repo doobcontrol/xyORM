@@ -1,5 +1,6 @@
 using xy.Db;
 using xy.Db.PostgreSQL;
+using xy.Db.SQLite64;
 using xy.ORM;
 
 namespace TestBench
@@ -42,7 +43,7 @@ namespace TestBench
             adminPars.Add(DbService.pn_dbPassword,
                 admindbPassword);
             BaseModel.DefaultDbService = new DbService(
-                new PostgreSQLDbAccess()
+                new SQLite64DbAccess()
                 );
             await BaseModel.CreateDatabaseAsync(
                 dbCreatePars,
