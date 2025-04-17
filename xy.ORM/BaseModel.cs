@@ -36,10 +36,22 @@ namespace xy.ORM
             else
             {
                 T instance = new T();
-                _instanceDic.Add(typeof(T), instance);
-                instance.DbService = defaultDbService;
+                instance.initNewInstance();
                 return instance;
             }
+        }
+        private void initNewInstance()
+        {
+            Type type = this.GetType();
+            if (_instanceDic.ContainsKey(type))
+            {
+                _instanceDic[type] = this;
+            }
+            else
+            {
+                _instanceDic.Add(type, this);
+            }
+            this.DbService = defaultDbService;
         }
 
         private static List<Type> modelList
@@ -105,6 +117,7 @@ namespace xy.ORM
                 else
                 {
                     model = (BaseModel)Activator.CreateInstance(type);
+                    model.initNewInstance();
                     _instanceDic[type] = model;
                 }
                 dbScript += model.createTableDbScript();

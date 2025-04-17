@@ -3,19 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Nodes;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace TestBench
+namespace xyDbSample
 {
-    internal class xyCfg
+    class xyCfg
     {
         private xyCfg()
         {
             if (!File.Exists(cfgFile))
             {
-                JsonArray JsonObj = new JsonArray();
+                JsonArray JsonObj = new JsonArray(); 
                 JsonObject keyValuePairs = new JsonObject();
 
                 //SQlite
@@ -35,6 +35,13 @@ namespace TestBench
                 //SQLServer
                 keyValuePairs = new JsonObject();
                 keyValuePairs[dbType] = dT_SQLServer;
+                keyValuePairs[dbCeated] = false;
+                keyValuePairs[connStr] = "";
+                JsonObj.Add(keyValuePairs);
+
+                //MySql
+                keyValuePairs = new JsonObject();
+                keyValuePairs[dbType] = dT_MySql;
                 keyValuePairs[dbCeated] = false;
                 keyValuePairs[connStr] = "";
                 JsonObj.Add(keyValuePairs);
@@ -92,9 +99,9 @@ namespace TestBench
             {
                 if (item[dbType].ToString() == dType)
                 {
-                    foreach (var kvp in pValues)
+                    foreach(var kvp in pValues)
                     {
-                        if (kvp.Key == dbCeated)
+                        if(kvp.Key == dbCeated)
                         {
                             item[kvp.Key] = bool.Parse(kvp.Value);
                         }
@@ -116,6 +123,7 @@ namespace TestBench
         public const string dT_SQLite = "SQLite";
         public const string dT_PostgreSQL = "PostgreSQL";
         public const string dT_SQLServer = "SQLServer";
+        public const string dT_MySql = "MySql";
 
         static private xyCfg instance = new xyCfg();
         static public string get(string dType, string pName)
