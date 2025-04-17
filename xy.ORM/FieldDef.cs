@@ -72,7 +72,7 @@ namespace xy.ORM
             switch (_fieldType)
             {
                 case Type t when t == typeof(string):
-                    fieldTypeString = "TEXT";
+                    fieldTypeString = "CHAR(100)";
                     break;
                 case Type t when t == typeof(int):
                     fieldTypeString = "INT";

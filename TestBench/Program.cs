@@ -1,3 +1,5 @@
+using xy.Db;
+
 namespace TestBench
 {
     internal static class Program
@@ -11,7 +13,13 @@ namespace TestBench
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            FrmDbSelector frmDbSelector = new FrmDbSelector();
+            if (frmDbSelector.ShowDialog() == DialogResult.OK)
+            {
+                Form1 form1 = new Form1();
+                form1.Text = "xyDbSample - " + frmDbSelector.DbType;
+                Application.Run(form1);
+            }
         }
     }
 }

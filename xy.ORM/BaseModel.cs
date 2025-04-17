@@ -1,6 +1,7 @@
 ﻿using System.Xml.Linq;
 using System;
 using xy.Db;
+using System.Data;
 
 namespace xy.ORM
 {
@@ -36,6 +37,7 @@ namespace xy.ORM
             {
                 T instance = new T();
                 _instanceDic.Add(typeof(T), instance);
+                instance.DbService = defaultDbService;
                 return instance;
             }
         }
@@ -76,7 +78,7 @@ namespace xy.ORM
 
         #region DataBase Init
 
-        public static async Task CreateDatabaseAsync(
+        public static async Task<string> CreateDatabaseAsync(
             Dictionary<string, string> dbCreatePars,
             Dictionary<string, string> adminPars
             )
@@ -86,6 +88,7 @@ namespace xy.ORM
             await DefaultDbService.OpenForAdminAsync(adminPars);
             string createdConnectString =
                 await DefaultDbService.DbCreateAsync(dbCreatePars);
+            return createdConnectString;
         }
         private static string createDbScript()
         {
@@ -190,12 +193,87 @@ namespace xy.ORM
         #endregion
 
         #region Data
+        public async Task<DataTable> QueryAsync(string sql)
+        {
+            DataTable dt = await DbService.exeSqlForDataSetAsync(sql);
+            return dt;
+        }
+        public async Task EditAsync(string sql)
+        {
+            await DbService.exeSqlAsync(sql);
+        }
+
+        #region Query
+
+        public async Task<DataTable> SelectAll()
+        {
+            string sql = "SELECT * FROM " + _bmCode;
+            return await QueryAsync(sql);
+        }
+
+        public async Task<DataTable> Select(string whereStr)
+        {
+            string sql = "SELECT * FROM " + _bmCode + " WHERE " + whereStr;
+            return await QueryAsync(sql);
+        }
 
         #endregion
-        public void update()
-        {
 
+        #region Insert
+        public async Task Insert(Dictionary<string, string> recordDic)
+        {
+            string fStr = "";
+            string vStr = "";
+            foreach (KeyValuePair<string, string> kvp in recordDic)
+            {
+                if (fStr != "")
+                {
+                    fStr += ",";
+                    vStr += ",";
+                }
+                fStr += kvp.Key;
+                vStr += "'" + kvp.Value + "'";
+            }
+            string sql = "INSERT INTO " + _bmCode 
+                + "("+ fStr + ") VALUES("+ vStr + ")";
+            await EditAsync(sql);
         }
+
+        #endregion
+
+        #region Update
+
+        public async Task Update(
+            Dictionary<string, string> recordDic, string whereStr)
+        {
+            string sStr = "";
+            foreach (KeyValuePair<string, string> kvp in recordDic)
+            {
+                if (sStr != "")
+                {
+                    sStr += ",";
+                }
+                sStr += kvp.Key + "='" + kvp.Value + "'";
+            }
+            string sql = "UPDATE " + _bmCode
+                + " SET " + sStr + " WHERE " + whereStr;
+            await EditAsync(sql);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public async Task Delete(string whereStr)
+        {
+            string sql = "DELETE FROM " + _bmCode
+                + " WHERE " + whereStr;
+            await EditAsync(sql);
+        }
+
+        #endregion
+
+        #endregion
 
         #endregion
     }

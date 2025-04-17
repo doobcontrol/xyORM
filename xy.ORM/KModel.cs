@@ -17,5 +17,45 @@ namespace xy.ORM
             fieldList.Add(new FieldDef(fID, "Key",
                 typeof(string), true));
         }
+
+        #region Query
+
+        public async Task<DataTable> SelectByPk(string pk)
+        {
+            string whereStr = fID + "='" + pk + "'";
+            return await Select(whereStr);
+        }
+
+        public async Task<DataTable> SelectByField(string field, string value)
+        {
+            string whereStr = field + "='" + value + "'";
+            return await Select(whereStr);
+        }
+
+        #endregion
+
+        #region Insert
+
+        #endregion
+
+        #region Update
+
+        public async Task UpdateByPk(
+            Dictionary<string, string> recordDic, string pk)
+        {
+            string whereStr = fID + "='" + pk + "'";
+            await Update(recordDic, whereStr);
+        }
+        #endregion
+
+        #region Delete
+
+        public async Task DeleteByPk(string pk)
+        {
+            string whereStr = fID + "='" + pk + "'";
+            await Delete(whereStr);
+        }
+
+        #endregion
     }
 }
