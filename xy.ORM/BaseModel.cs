@@ -2,6 +2,7 @@
 using System;
 using xy.Db;
 using System.Data;
+using System.Linq;
 
 namespace xy.ORM
 {
@@ -220,13 +221,13 @@ namespace xy.ORM
 
         public async Task<DataTable> SelectAll()
         {
-            string sql = "SELECT * FROM " + _bmCode;
+            string sql = SelectSql();
             return await QueryAsync(sql);
         }
 
         public async Task<DataTable> Select(string whereStr)
         {
-            string sql = "SELECT * FROM " + _bmCode + " WHERE " + whereStr;
+            string sql = SelectWhereSql(whereStr);
             return await QueryAsync(sql);
         }
 
@@ -235,20 +236,7 @@ namespace xy.ORM
         #region Insert
         public async Task Insert(Dictionary<string, string> recordDic)
         {
-            string fStr = "";
-            string vStr = "";
-            foreach (KeyValuePair<string, string> kvp in recordDic)
-            {
-                if (fStr != "")
-                {
-                    fStr += ",";
-                    vStr += ",";
-                }
-                fStr += kvp.Key;
-                vStr += "'" + kvp.Value + "'";
-            }
-            string sql = "INSERT INTO " + _bmCode 
-                + "("+ fStr + ") VALUES("+ vStr + ")";
+            string sql = InsertSql(recordDic);
             await EditAsync(sql);
         }
 
@@ -259,17 +247,7 @@ namespace xy.ORM
         public async Task Update(
             Dictionary<string, string> recordDic, string whereStr)
         {
-            string sStr = "";
-            foreach (KeyValuePair<string, string> kvp in recordDic)
-            {
-                if (sStr != "")
-                {
-                    sStr += ",";
-                }
-                sStr += kvp.Key + "='" + kvp.Value + "'";
-            }
-            string sql = "UPDATE " + _bmCode
-                + " SET " + sStr + " WHERE " + whereStr;
+            string sql = UpdateSql(recordDic, whereStr);
             await EditAsync(sql);
         }
 
@@ -279,10 +257,108 @@ namespace xy.ORM
 
         public async Task Delete(string whereStr)
         {
-            string sql = "DELETE FROM " + _bmCode
-                + " WHERE " + whereStr;
+            string sql = DeleteSql(whereStr);
             await EditAsync(sql);
         }
+
+        #endregion
+
+        #region SQL string builder
+
+        #region Select
+        public string SelectSql(
+            string? fieldStr, string? whereStr)
+        {
+            string sql = $"SELECT {fieldStr ?? "*"} FROM {_bmCode}";
+            if (whereStr is not null && whereStr != "")
+            {
+                sql += $" WHERE {whereStr}";
+            }
+            return sql;
+        }
+        public string SelectSql(string? fieldStr)
+        {
+            return SelectSql(fieldStr ?? "*", null);
+        }
+        public string SelectSql()
+        {
+            return SelectSql(null);
+        }
+        public string SelectWhereSql(string whereStr)
+        {
+            return SelectSql(null, whereStr);
+        }
+
+        #endregion
+        #region Insert
+        public string InsertSql(
+            string fieldStr, string valueStr)
+        {
+            string sql = $"INSERT INTO {_bmCode}({fieldStr}) VALUES({valueStr})";
+            return sql;
+        }
+        public string InsertSql(Dictionary<string, string> recordDic)
+        {
+            return InsertSql(
+                string.Join(",", recordDic.Keys),
+                "'" + string.Join("','", recordDic.Values) + "'"
+                );
+        }
+
+        #endregion
+        #region Update
+
+        public string UpdateSql(
+            string setStr, string whereStr)
+        {
+            string sql = $"UPDATE {_bmCode} SET {setStr}";
+            if (whereStr != "")
+            {
+                sql += $" WHERE {whereStr}";
+            }
+            return sql;
+        }
+
+        public string UpdateSql(
+            Dictionary<string, string> recordDic, string whereStr)
+        {
+            return UpdateSql(SetSql(recordDic), whereStr);
+        }
+        public string SetSql(Dictionary<string, string> recordDic)
+        {
+            string sStr = "";
+            foreach (KeyValuePair<string, string> kvp in recordDic)
+            {
+                if (sStr != "")
+                {
+                    sStr += ",";
+                }
+                sStr +=  $"{kvp.Key}='{kvp.Value}'";
+            }
+            return sStr;
+        }
+
+        #endregion
+        #region Delete
+        public string DeleteSql(string whereStr)
+        {
+            string sql = $"DELETE FROM {_bmCode}";
+            if (whereStr != "")
+            {
+                sql += $" WHERE {whereStr}";
+            }
+            return sql;
+        }
+
+        #endregion
+        #region Where
+
+        public string WhereSql(string field, string value)
+        {
+            return field + "='" + value + "'";
+        }
+
+        #endregion
 
         #endregion
 

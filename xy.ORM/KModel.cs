@@ -22,13 +22,13 @@ namespace xy.ORM
 
         public async Task<DataTable> SelectByPk(string pk)
         {
-            string whereStr = fID + "='" + pk + "'";
+            string whereStr = WhereKeySql(pk);
             return await Select(whereStr);
         }
 
         public async Task<DataTable> SelectByField(string field, string value)
         {
-            string whereStr = field + "='" + value + "'";
+            string whereStr = WhereSql(field, value);
             return await Select(whereStr);
         }
 
@@ -43,7 +43,7 @@ namespace xy.ORM
         public async Task UpdateByPk(
             Dictionary<string, string> recordDic, string pk)
         {
-            string whereStr = fID + "='" + pk + "'";
+            string whereStr = WhereKeySql(pk);
             await Update(recordDic, whereStr);
         }
         #endregion
@@ -52,10 +52,19 @@ namespace xy.ORM
 
         public async Task DeleteByPk(string pk)
         {
-            string whereStr = fID + "='" + pk + "'";
+            string whereStr = WhereKeySql(pk);
             await Delete(whereStr);
         }
 
         #endregion
+
+        #region SQL string builder
+        public string WhereKeySql(string value)
+        {
+            return WhereSql(fID, value);
+        }
+
+        #endregion
+
     }
 }
