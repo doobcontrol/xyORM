@@ -10,6 +10,7 @@ namespace xy.ORM
     {
         private string _fieldName;
         private Type _fieldType;
+        private int _fieldLength = -1;
         private string _fieldCode;
         private bool _isPrimaryKey = false;
         private bool _isForeignKey = false;
@@ -30,6 +31,14 @@ namespace xy.ORM
             _fieldName = fieldName;
             _fieldCode = fieldCode;
             _fieldType = fieldType;
+        }
+        public FieldDef(
+            string fieldCode,
+            string fieldName,
+            Type fieldType,
+            int fieldLength) : this(fieldCode, fieldName, fieldType)
+        {
+            _fieldLength = fieldLength;
         }
         public FieldDef(
             string fieldCode, 
@@ -72,7 +81,12 @@ namespace xy.ORM
             switch (_fieldType)
             {
                 case Type t when t == typeof(string):
-                    fieldTypeString = "CHAR(100)";
+                    int length = _fieldLength;
+                    if (_fieldLength < 0)
+                    {
+                        length = 100; ;
+                    }
+                    fieldTypeString = "VARCHAR("+ length + ")";
                     break;
                 case Type t when t == typeof(int):
                     fieldTypeString = "INT";
