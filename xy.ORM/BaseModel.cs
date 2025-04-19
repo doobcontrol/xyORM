@@ -239,6 +239,15 @@ namespace xy.ORM
             string sql = InsertSql(recordDic);
             await EditAsync(sql);
         }
+        public async Task Insert(List<Dictionary<string, string>> recordList)
+        {
+            string sql = "";
+            foreach (Dictionary<string, string> recordDic in recordList)
+            {
+                sql += InsertSql(recordDic) + ";";
+            }
+            await EditAsync(sql);
+        }
 
         #endregion
 
