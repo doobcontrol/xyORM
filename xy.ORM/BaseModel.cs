@@ -239,13 +239,9 @@ namespace xy.ORM
             string sql = InsertSql(recordDic);
             await EditAsync(sql);
         }
-        public async Task Insert(List<Dictionary<string, string>> recordList)
+        public async Task Insert(List<Dictionary<string, string?>> recordList)
         {
-            string sql = "";
-            foreach (Dictionary<string, string> recordDic in recordList)
-            {
-                sql += InsertSql(recordDic) + ";";
-            }
+            string sql = InsertSql(recordList);
             await EditAsync(sql);
         }
 
@@ -312,6 +308,41 @@ namespace xy.ORM
                 string.Join(",", recordDic.Keys),
                 "'" + string.Join("','", recordDic.Values) + "'"
                 );
+        }
+        //All records in the list must have the same fields
+        public string InsertSql(
+            List<Dictionary<string, string?>> recordList)
+        {
+            List<string> fieldList = recordList[0].Keys.ToList();
+            string fieldStr = string.Join(",", fieldList);
+            string valueStr = "";
+            foreach (Dictionary<string, string?> recordDic in recordList)
+            {
+                string tempValueStr = "(";
+                foreach (string key in fieldList)
+                {
+                    if (tempValueStr != "(")
+                    {
+                        tempValueStr += ",";
+                    }
+                    if (recordDic[key] == null)
+                    {
+                        tempValueStr += "NULL";
+                    }
+                    else
+                    {
+                        tempValueStr += "'" + recordDic[key] + "'";
+                    }
+                }
+                tempValueStr += ")";
+                if(valueStr != "")
+                {
+                    valueStr += ",";
+                }
+                valueStr += tempValueStr;
+            }
+            string sql = $"INSERT INTO {_bmCode}({fieldStr}) VALUES{valueStr}";
+            return sql;
         }
 
         #endregion
