@@ -231,6 +231,19 @@ namespace xy.ORM
             return await QueryAsync(sql);
         }
 
+        public async Task<int> SelectCount()
+        {
+            string sql = SelectCountSql();
+            DataTable tb = await QueryAsync(sql);
+            return int.Parse(tb.Rows[0][0].ToString() ?? "0");
+        }
+        public async Task<string?> SelectMax(string column)
+        {
+            string sql = SelectMaxSql(column);
+            DataTable tb = await QueryAsync(sql);
+            return tb.Rows[0][0].ToString() ?? null;
+        }
+
         #endregion
 
         #region Insert
@@ -292,6 +305,15 @@ namespace xy.ORM
         public string SelectWhereSql(string whereStr)
         {
             return SelectSql(null, whereStr);
+        }
+
+        public string SelectCountSql()
+        {
+            return SelectSql("COUNT(*)");
+        }
+        public string SelectMaxSql(string column)
+        {
+            return SelectSql($"COUNT({column})");
         }
 
         #endregion
