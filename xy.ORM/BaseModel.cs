@@ -313,7 +313,7 @@ namespace xy.ORM
         }
         public string SelectMaxSql(string column)
         {
-            return SelectSql($"COUNT({column})");
+            return SelectSql($"MAX({column})");
         }
 
         #endregion
